@@ -3,7 +3,6 @@
 #----------------------------------------------------------------------------#
 
 import json
-from sqlite3 import Timestamp
 import dateutil.parser
 import babel
 from flask import Flask, render_template, request, Response, flash, redirect, url_for
@@ -33,10 +32,10 @@ migrate = Migrate(app, db)
 #----------------------------------------------------------------------------#
 
 # TODO Implement Show and Artist models, and complete all model relationships and properties, as a database migration.
-show_info = db.Table('Show_info',
+show_info = db.Table('show_info',
+  db.Column('start_time', db.DateTime),
   db.Column('venue_id', db.Integer, db.ForeignKey('Venue.id'), primary_key=True),
-  db.Column('artise_id', db.Integer, db.ForeignKey('Artist.id'), primary_key=True),
-  db.Column('start_time', db.DateTime)
+  db.Column('artise_id', db.Integer, db.ForeignKey('Artist.id'), primary_key=True)
 )
 
 class Venue(db.Model):
@@ -52,11 +51,12 @@ class Venue(db.Model):
   facebook_link = db.Column(db.String(120))
 
   # TODO: implement any missing fields, as a database migration using Flask-Migrate
-  genres = db.Column(postgresql.ARRAY(Integer))
+  # genres = db.Column(postgresql.ARRAY(Integer))
+  genres = db.Column(db.String(120))
   website = db.Column(db.String(120))
   seeking_talent = db.Column(db.Boolean)
   seeking_description = db.Column(db.String(120))
-  shows = db.relationship('Artist', secondary=show_info, backref=db.backref('shows', lazy=True))
+  artists = db.relationship('Artist', secondary=show_info, backref=db.backref('venues', lazy=True))
   past_shows_count = db.Column(db.Integer)
   upcoming_shows_count = db.Column(db.Integer)
 
@@ -76,7 +76,7 @@ class Artist(db.Model):
   website = db.Column(db.String(120))
   seeking_venue = db.Column(db.Boolean)
   seeking_description = db.Column(db.String(500))
-  shows = db.relationship('Venue', secondary=show_info, backref=db.backref('shows', lazy=True))
+  # venues = db.relationship('Venue', secondary=show_info, backref=db.backref('artists', lazy=True))
   past_shows_count = db.Column(db.Integer)
   upcoming_shows_count = db.Column(db.Integer)
 
