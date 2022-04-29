@@ -120,44 +120,29 @@ def index():
 def venues():
   # TODO: replace with real venues data.
   #       num_upcoming_shows should be aggregated based on number of upcoming shows per venue.
-
   venues = Venue.query.all()
-  shows = show_info.query.order_by(Venue.id)
-  data = []
-  # for venue in venues:
-  #   findCity = False
-  #   for dataPointer in data:
-  #     if dataPointer["city"] == venue.city:
-  #       findCity = True
-  #       dataPointer["venues"].append({"id": venue.id, "name": venue.name, "num_upcoming_shows": venue.upcoming_shows_count})
-  #       break
-  #   if not findCity:
-  #     data.append({"city": venue.city, "state": venue.state, "venues":[{"id": venue.id, "name": venue.name,"num_upcoming_shows": venue.upcoming_shows_count}]})
-  
-  # data=[{
-  #   "city": "San Francisco",
-  #   "state": "CA",
-  #   "venues": [{
-  #     "id": 1,
-  #     "name": "The Musical Hop",
-  #     "num_upcoming_shows": 0,
-  #   }, {
-  #     "id": 3,
-  #     "name": "Park Square Live Music & Coffee",
-  #     "num_upcoming_shows": 1,
-  #   }]
-  # }, {
-  #   "city": "New York",
-  #   "state": "NY",
-  #   "venues": [{
-  #     "id": 2,
-  #     "name": "The Dueling Pianos Bar",
-  #     "num_upcoming_shows": 0,
-  #   }]
-  # }]
-  # for show in shows:
+  for i in Venue.query.all():
+    i.upcoming_shows = 0
 
-  return render_template('pages/venues.html', areas=Venue.query.all())
+  data = []
+  for show in show_info.query.all():
+    if pytz.utc.localize(show.start_time) < pytz.utc.localize(datetime.utcnow()):
+      Venue.query.get(show.venue_id).upcoming_shows += 1
+
+  def abc(abc):
+    return abc.upcoming_shows
+  # venues = Venue.query.all()
+  venues.sort(key= abc, reverse=True)
+  for i in venues:
+    find = False
+    for j in data:
+      if j['city'] == i.city:
+        find = True
+        j['venues'].append({"id": i.id, "name": i.name, "num_upcoming_shows": i.upcoming_shows})
+        break
+    if not find:
+      data.append({"city": i.city, "state": i.state, "venues": [{"id": i.id, "name": i.name, "num_upcoming_shows": i.upcoming_shows}]})
+  return render_template('pages/venues.html', areas=data)
 
 @app.route('/venues/search', methods=['POST'])
 def search_venues():
