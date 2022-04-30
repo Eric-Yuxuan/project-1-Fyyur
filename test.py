@@ -28,7 +28,7 @@ data = []
 for show in show_info.query.all():
   # venuesList_upcomingShowCount.append([venue.id, show_info.query.filter_by(venue_id = venue.id).count()])
   # print(show_info.query.filter_by(venue.id < 1).count())
-  if pytz.utc.localize(show.start_time) < pytz.utc.localize(datetime.utcnow()):
+  if pytz.utc.localize(show.start_time) > pytz.utc.localize(datetime.utcnow()):
     # venuesList_upcomingShowCount[show.venue_id-1][1] += 1
     Venue.query.get(show.venue_id).upcoming_shows += 1
     # pass
