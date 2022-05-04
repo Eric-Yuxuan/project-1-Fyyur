@@ -108,7 +108,6 @@ def venues():
   venues = Venue.query.all()
   for venue in Venue.query.all():
     venue.upcoming_shows = 0
-
   data = []
   for show in show_info.query.all():
     if pytz.utc.localize(show.start_time) > pytz.utc.localize(datetime.utcnow()):
@@ -116,7 +115,6 @@ def venues():
 
   def abc(abc):
     return abc.upcoming_shows
-  # venues = Venue.query.all()
   venues.sort(key= abc, reverse=True)
   for venue in venues:
     find = False
