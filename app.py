@@ -32,7 +32,7 @@ migrate = Migrate(app, db)
 #----------------------------------------------------------------------------#
 
 class Venue(db.Model):
-  __tablename__ = 'Venue'
+  __tablename__ = 'venues'
 
   id = db.Column(db.Integer, primary_key=True)
   name = db.Column(db.String)
@@ -50,7 +50,7 @@ class Venue(db.Model):
   seeking_description = db.Column(db.String(120))
 
 class Artist(db.Model):
-  __tablename__ = 'Artist'
+  __tablename__ = 'artists'
 
   id = db.Column(db.Integer, primary_key=True)
   name = db.Column(db.String)
@@ -68,10 +68,10 @@ class Artist(db.Model):
 
 # TODO Implement Show and Artist models, and complete all model relationships and properties, as a database migration.
 class show_info(db.Model):
-  __tablename__ = 'show_info'
+  __tablename__ = 'show_infos'
   id = db.Column(db.Integer, primary_key = True)
-  venue_id = db.Column(db.Integer, db.ForeignKey('Venue.id'))
-  artist_id = db.Column(db.Integer, db.ForeignKey('Artist.id'))
+  venue_id = db.Column(db.Integer, db.ForeignKey('venues.id'))
+  artist_id = db.Column(db.Integer, db.ForeignKey('artists.id'))
   start_time = db.Column('start_time', db.DateTime)
 
 
@@ -112,10 +112,9 @@ def venues():
   for show in show_info.query.all():
     if pytz.utc.localize(show.start_time) > pytz.utc.localize(datetime.utcnow()):
       Venue.query.get(show.venue_id).upcoming_shows += 1
-
-  def abc(abc):
-    return abc.upcoming_shows
-  venues.sort(key= abc, reverse=True)
+  def venueUpcomingShows(venues):
+    return venues.upcoming_shows
+  venues.sort(key= venueUpcomingShows, reverse=True)
   for venue in venues:
     find = False
     for i in data:
